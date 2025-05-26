@@ -1,4 +1,6 @@
 import numpy as np
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
 
 
 def pca(X, k):
@@ -16,7 +18,7 @@ def pca(X, k):
     eigvals, eigvecs = np.linalg.eig(C)
 
     # sorting
-    idx = np.argsort(eigvals[::1])
+    idx = np.argsort(eigvals[::-1])
     eigvals, eigvecs = eigvals[idx], eigvecs[:, idx]
 
     # selecting top k eigenvectors
@@ -26,3 +28,13 @@ def pca(X, k):
     Z = np.dot(Xc, selected)
 
     return Z
+
+data = load_iris()
+X, y = data.data, data.target
+
+Z = pca(X, k=2)
+
+plt.scatter(Z[:,0], Z[:,1], c=y, cmap='tab10', edgecolor='k')
+plt.xlabel('PC1'); plt.ylabel('PC2')
+plt.title('Iris in 2D PCA space')
+plt.show()

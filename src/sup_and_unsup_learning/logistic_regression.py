@@ -7,14 +7,18 @@ class LogisticRegression:
         self.n_iters = n_iters
 
     def _sigmoid(self, z):
-        return 1 / (1 + math.exp(-z))
+        if z >= 0:
+            return 1 / (1 + math.exp(-z))
+        else:
+            exp_z = math.exp(z)
+            return exp_z / (1.0 + exp_z)
 
     def fit(self, X, y):
         n_samples, n_features = len(X), len(X[0])
         
         #weights and biases are initialised
         self.w = [0.0]*n_features
-        self.b = 0-0
+        self.b = 0.0
 
         for _ in range(self.n_iters):
             dw = [0.0]*n_features

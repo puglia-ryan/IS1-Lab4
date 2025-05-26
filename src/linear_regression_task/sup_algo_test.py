@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from logistic_regression import LogisticRegression
 
 # Load heart failure dataset into pandas dataframe
-df = pd.read_csv("src/sup_and_unsup_learning/heart.csv")
+df = pd.read_csv("src/linear_regression_task/heart.csv")
 print(df.head())
 
 # separate features & target

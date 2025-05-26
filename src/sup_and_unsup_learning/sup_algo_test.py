@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 from logistic_regression import LogisticRegression
 
-#Load heart failure dataset into pandas dataframe
+# Load heart failure dataset into pandas dataframe
 df = pd.read_csv("src/sup_and_unsup_learning/heart.csv")
 print(df.head())
 
@@ -26,7 +26,7 @@ X_train_df, X_test_df, y_train, y_test = train_test_split(
 # feature scaling
 scaler = StandardScaler()
 X_train_arr = scaler.fit_transform(X_train_df)
-X_test_arr  = scaler.transform(X_test_df)
+X_test_arr = scaler.transform(X_test_df)
 
 # build and train model
 model = LogisticRegression(lr=0.01, n_iters=5000)
@@ -37,3 +37,42 @@ preds = model.predict(X_test_arr.tolist())
 print("Accuracy:", accuracy_score(y_test, preds))
 print(classification_report(y_test, preds))
 
+
+class LogisticRegressionWithHistory(LogisticRegression):
+
+    def fit(self, X, y):
+        self.history = []
+        n_samples, n_features = len(X), len(X[0])
+        
+        #weights and biases are initialised
+        self.w = [0.0]*n_features
+        self.b = 0.0
+
+        for _ in range(self.n_iters):
+            dw = [0.0]*n_features
+            db = 0.0
+            
+            # Computing the gradients:
+            for xi, yi in zip(X, y):
+                #The linear model
+                z = sum(wi*xx for wi, xx in zip(self.w, xi)) + self.b
+                y_pred = self._sigmoid(z)
+
+                # gradients
+                error = y_pred -yi
+                for j in range(n_features):
+                    dw[j] += xi[j] * error
+                db += error
+            
+            # Average is computed
+            dw = [d / n_samples for d in dw]
+            db /= n_samples
+            
+            # Parameters are updated
+            self.w = [wi - self.lr * dwi for wi, dwi in zip(self.w, dw)]
+            self.b -= self.lr * db
+
+            # Track the history
+            predictions = self.predict(X)
+            acc = accuracy_score(y, predictions)
+            self.history.append(acc)

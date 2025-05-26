@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
-
+import matplotlib.pyplot as plt
 from logistic_regression import LogisticRegression
 
 # Load heart failure dataset into pandas dataframe
@@ -27,16 +27,6 @@ X_train_df, X_test_df, y_train, y_test = train_test_split(
 scaler = StandardScaler()
 X_train_arr = scaler.fit_transform(X_train_df)
 X_test_arr = scaler.transform(X_test_df)
-
-# build and train model
-model = LogisticRegression(lr=0.01, n_iters=5000)
-model.fit(X_train_arr.tolist(), y_train.tolist())
-
-# results
-preds = model.predict(X_test_arr.tolist())
-print("Accuracy:", accuracy_score(y_test, preds))
-print(classification_report(y_test, preds))
-
 
 class LogisticRegressionWithHistory(LogisticRegression):
 
@@ -76,3 +66,21 @@ class LogisticRegressionWithHistory(LogisticRegression):
             predictions = self.predict(X)
             acc = accuracy_score(y, predictions)
             self.history.append(acc)
+
+# build and train model
+model = LogisticRegressionWithHistory(lr=0.01, n_iters=5000)
+model.fit(X_train_arr.tolist(), y_train.tolist())
+
+# results
+preds = model.predict(X_test_arr.tolist())
+print("Accuracy:", accuracy_score(y_test, preds))
+print(classification_report(y_test, preds))
+
+# plotting the accuracy of the model's predictions over time
+plt.figure(figsize=(8,5))
+plt.plot(range(1, len(model.history)+1), model.history, marker="o")
+plt.title("Training Accuracy over Iterations")
+plt.xlabel("Iterations")
+plt.ylabel("Accuracy")
+plt.grid(True)
+plt.show()

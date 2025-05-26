@@ -8,18 +8,32 @@ from logistic_regression import LogisticRegression
 
 #Load heart failure dataset into pandas dataframe
 df = pd.read_csv("src/sup_and_unsup_learning/heart.csv")
+print(df.head())
 
-# Seperate features and target
-X = df.drop("DEATH_EVENT", axis=1).values.tolist()
-y = df["DEATH_EVENT"].values.tolist()
+# separate features & target
+X = df.drop("HeartDisease", axis=1)
+y = df["HeartDisease"]
 
-# Splitting the dataset into train and test
-X_train, X_test, y_train, y_test = train_test_split(
+# one-hot encoding
+cat_cols = ["Sex", "ChestPainType", "RestingECG", "ExerciseAngina", "ST_Slope"]
+X = pd.get_dummies(X, columns=cat_cols, drop_first=True)
+
+# train test split
+X_train_df, X_test_df, y_train, y_test = train_test_split(
     X, y, test_size=0.3, random_state=42, stratify=y
 )
 
-# Feature scaling
+# feature scaling
 scaler = StandardScaler()
-X_train = scaler.fit_transform(np.array(X_train)).tolist()
-X_test = scaler.fit_transform(np.array(X_test)).tolist()
+X_train_arr = scaler.fit_transform(X_train_df)
+X_test_arr  = scaler.transform(X_test_df)
+
+# build and train model
+model = LogisticRegression(lr=0.01, n_iters=5000)
+model.fit(X_train_arr.tolist(), y_train.tolist())
+
+# results
+preds = model.predict(X_test_arr.tolist())
+print("Accuracy:", accuracy_score(y_test, preds))
+print(classification_report(y_test, preds))
 

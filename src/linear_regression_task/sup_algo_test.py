@@ -88,7 +88,7 @@ class LogisticRegressionWithHistory(LogisticRegression):
             self.w = [wi - self.lr * dwi for wi, dwi in zip(self.w, dw)]
             self.b -= self.lr * db
 
-            # Predictions before training
+            # Save the accuracy and loss for each iteration
             self.compute_accuracy(X, y)
             self.compute_loss(X, y, n_samples, w=self.w, b=self.b)
 
